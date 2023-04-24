@@ -986,11 +986,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b42414fe7619f4b83d7809029cf0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tower: {fileID: 954235338}
+  EnemySpawnCenter: {fileID: 954235338}
+  SpawnRadius: 4
   Enemy: {fileID: 2047739859642579346, guid: 42f79e11031e75c43a3bfad9b7f9caa3, type: 3}
-  radius: 5
-  Spawning: 1
   SpawnRate: 1
+  Spawning: 1
   MaxEnemies: 10
   Enemycount: 0
 --- !u!1 &1954118717

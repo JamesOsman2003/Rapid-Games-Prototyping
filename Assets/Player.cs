@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // Set Up
-
+    // Set Up \\
     // Cameras
-
-    public GameObject Camera1;
-    public GameObject Camera2;
+    public GameObject Camera1; // Player Camera 
+    public GameObject Camera2; // Tower Camera
   
-    //States
+    // States
     public enum PlayerState
     {
         Walk = 0, // walking default control player
@@ -19,6 +17,7 @@ public class Player : MonoBehaviour
     }
     public PlayerState PState; // PlayerState
 
+    // Moving the Player \\
     // Directional Inputs
     private int Up = 0;
     private int Down = 0;
@@ -38,47 +37,54 @@ public class Player : MonoBehaviour
     private Vector2 movement;
 
         // Player Speed 
-        private float speed = 5;
-        private float walk = 5;
-        private float sprint = 10;
+        private float speed = 5; // speed to move between walk and sprint
+        private float walk = 5; // walk speed
+        private float sprint = 10; // sprint speed
+
+    // Other Inputs \\
 
     // Interacting
-    private bool interacting = false;
+    private bool interacting = false; // Input for Interaction
 
-    // Turret
+    // Shooting
+    private bool Shooting = false; // Input for Shooting
+
+    // Turret \\
+    // Interaction
     public GameObject TurretSeat = null; // Object to interact with to operate Turret
     private float DistanceTurretSeat; // Distance to Seat to Interact
 
+    // Turret Positions
     public GameObject Turret; // Turret Object that will be moved
     public GameObject TurretCP; // Turret Center Point to rotate around
+    Vector2 TurretPosition = Vector2.zero; // Turret Position to go to
 
+    // Turret Movement
     public float TurretSpeed = 0.1f; // Speed at which turret can move
     private float TurretAngleDeg = 90; // Angle of Turret in Degrees
     public float TurretAngle = 0; // Turret Angle in Radians
     public float TurretRadius = 2; // Radius of Turret circle it moves in
 
-    Vector2 TurretPosition = Vector2.zero; // Turret Position to go to
-
-    // Shooting
-    private bool Shooting = false; // Input for Shooting
+    // Turret Firing
     public GameObject Bullet; // Bullet To create when shooting
 
+    // Turret Delay
     public float firerate = 1; // how long it takes before you can shoot again in secs
     private float firedelay = 0; // increases with time to ensure passage of time before next shot fired
     private bool firing = false; // is firing?
 
 
     
-    //Start of Code
+    // Start of Code \\
 
     // Called Once at Start
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        PState = PlayerState.Walk;
+        rb = GetComponent<Rigidbody2D>(); // Rigidbody used for movement 
+        PState = PlayerState.Walk; // Player Default State - Walking
 
-        Camera1.SetActive(true);
-        Camera2.SetActive(false);
+        Camera1.SetActive(true); // PLayer Camera is on
+        Camera2.SetActive(false); // Tower Camera is off
     }
 
     // Update is called once per frame
@@ -118,7 +124,7 @@ public class Player : MonoBehaviour
             {
                 Left = 0;
             }
-        }
+        } // 0 if key not pressed 1 if pressed (WASD + Arrow Keys)
 
         // Outcome of inputs
         Horizontal = Right - Left;
@@ -149,6 +155,7 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 interacting = true;
+                Debug.Log("Interacting");
             }
             else if (Input.GetKeyUp(KeyCode.E))
             {
@@ -161,6 +168,7 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 Shooting = true;
+                Debug.Log("Shooting");
             }
             else if (Input.GetKeyUp(KeyCode.Q))
             {
@@ -174,13 +182,15 @@ public class Player : MonoBehaviour
         {
             // Gets the distance to the turret seat to determine whether it is close enough to switch to control turret;
             DistanceTurretSeat = Vector2.Distance(transform.position, TurretSeat.transform.position);
+
             if (DistanceTurretSeat < 2 && interacting == true)
             {
                 interacting = false; // Prevents double interactions
                 PState = PlayerState.Turret; // Switchs the control from Player to Turret
                 Debug.Log("Switch to Turret Control");
 
-                Camera1.SetActive(false);
+                // Camera Switch Focus to Turret
+                Camera1.SetActive(false); 
                 Camera2.SetActive(true);
             }
         }
@@ -195,6 +205,7 @@ public class Player : MonoBehaviour
                 PState = PlayerState.Walk; // Switchs the control from Turret to Player
                 Debug.Log("Switch to Player Control");
 
+                // Camera Switch Focus to Player
                 Camera1.SetActive(true);
                 Camera2.SetActive(false);
             }
@@ -216,8 +227,9 @@ public class Player : MonoBehaviour
                 if (firing == false) //
                                      // Bullet not just fired
                 {
-                    Instantiate(Bullet, TurretPosition, transform.rotation);
+                    Instantiate(Bullet, TurretPosition, transform.rotation); // Creates a Bullet
                     firing = true; // Bullet just fired
+                    Debug.Log("Create Bullet");
                 }
 
                 if (firing == true) // Bullet just fired
@@ -237,10 +249,10 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         if (PState == PlayerState.Walk) // Checks that the player can move
-            moveCharacter(movement); // Moves the Player
+            MoveCharacter(movement); // Moves the Player
     }
 
-    void moveCharacter(Vector2 direction)
+    void MoveCharacter(Vector2 direction)
     {
         // Moves the player from the current location to the desired location over time 
         rb.MovePosition((Vector2)transform.position + (direction * speed * Time.deltaTime));  
