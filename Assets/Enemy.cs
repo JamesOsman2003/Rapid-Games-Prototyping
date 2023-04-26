@@ -20,13 +20,23 @@ public class Enemy : MonoBehaviour
     public GameObject EnemySpawner; // Used to keep track of enemy count.
 
     // Enemy Stats
-    public float EnemyHealth = 10;
+    public int EnemyMaxHealth = 100; // Max Health
+    public float EnemyHealth; // Current Health
+    private float LastFrameHealth; // Previous Health
+
+    // Health Bar
+    public HealthBar healthBar; // Health Bar
 
     // Called Once at Start
     void Start()
     {
+        EnemySpawner = GameObject.FindGameObjectWithTag("EnemySpawner"); // Ensures that the Enemy Spawner is set within the enemy so when it gets destroyed it updates the enemy count as required.       
+        EnemyHealth = EnemyMaxHealth; // Ensures that Health equals Max health when spawned
+        LastFrameHealth = EnemyMaxHealth; // Sets the Default Last Health Value
+        healthBar.SetMaxHealth(EnemyMaxHealth); // Sets the Health Bar Max value
+        healthBar.SetHealth(EnemyMaxHealth); // Sets the Health Bar Current Value
         rb = GetComponent<Rigidbody2D>(); // Rigidbody used for movement 
-        EnemySpawner = GameObject.FindGameObjectWithTag("EnemySpawner"); // Ensures that the Enemy Spawner is set within the enemy so when it gets destroyed it updates the enemy count as required.
+         
     }
 
     // Update is called once per frame
@@ -36,9 +46,11 @@ public class Enemy : MonoBehaviour
         Vector3 direction = Tower.transform.position - transform.position; // Gets the direction towards the tower
         direction.Normalize(); // Ensures that the direction is in the correct format
 
+        /* Rotation - This would rotate the Health Bar as it is attached to the Enemy As Such shouldnt be used.
         // Rotation
-        float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg; // Changes the angle from being in radian to being in degrees;
-        rb.rotation = -angle; // rotates the enemy as need to ensure it faces towards direction of movement
+        // float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg; // Changes the angle from being in radian to being in degrees;
+        // rb.rotation = -angle; // rotates the enemy as need to ensure it faces towards direction of movement
+        */
 
         // Movement
         movement = direction; // movemnt direction 
@@ -54,6 +66,12 @@ public class Enemy : MonoBehaviour
         }
 
         // Health
+        if (EnemyHealth != LastFrameHealth) // If Health changes Enemy Health wont equal Last Frame Health
+        {
+            healthBar.SetHealth(EnemyHealth); // Sets the Health Bar Value to be the correct current value
+            LastFrameHealth = EnemyHealth; //Sets the Last Health to be the Current Health
+        }
+
         if (EnemyHealth <= 0) // If Health is less or equal to 0 then enemy is dead so destroy
         {
             Destroy(gameObject); // Destroys Enemy
@@ -64,7 +82,10 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        --EnemySpawner.GetComponent<EnemySpawner>().Enemycount; // Adjust the Enemy Count by 1 when destroyed
+        if (EnemySpawner != null)
+        {
+            --EnemySpawner.GetComponent<EnemySpawner>().Enemycount; // Adjust the Enemy Count by 1 when destroyed
+        }
     }
 
     private void FixedUpdate()
