@@ -85,6 +85,7 @@ public class Enemy : MonoBehaviour
         if (EnemySpawner != null)
         {
             --EnemySpawner.GetComponent<EnemySpawner>().Enemycount; // Adjust the Enemy Count by 1 when destroyed
+            ++EnemySpawner.GetComponent<EnemySpawner>().EnemyKillCount;
         }
     }
 

@@ -47,7 +47,9 @@ public class TopDownCharacterController : MonoBehaviour
     public void OnPlayerInputShoot(InputAction.CallbackContext context)
     {
         //Not performed? Don't run any other code
-        if (!context.performed)
+        if (context.performed)
+            return;
+        if (context.canceled)
             return;
 
         //Otherwise:
