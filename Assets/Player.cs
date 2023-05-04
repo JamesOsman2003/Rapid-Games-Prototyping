@@ -61,8 +61,8 @@ public class Player : MonoBehaviour
 
     // Turret Movement
     private float TurretSpeed;// Speed at which turret can move
-    private float TSW = 0.3f;
-    private float TSS = 0.6f;
+    private float TSW = 0.6f;
+    private float TSS = 1f;
     private float TurretAngleDeg = 90; // Angle of Turret in Degrees
     public float TurretAngle = 0; // Turret Angle in Radians
     public float TurretRadius = 2; // Radius of Turret circle it moves in

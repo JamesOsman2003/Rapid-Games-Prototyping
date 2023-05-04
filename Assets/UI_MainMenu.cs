@@ -25,7 +25,7 @@ public class UI_MainMenu : MonoBehaviour
 
     public void Quit()
     {
-        EditorApplication.isPlaying = false;
+        //EditorApplication.isPlaying = false;
         Application.Quit(0);
     }
 }
