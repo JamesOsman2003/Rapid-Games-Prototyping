@@ -34,6 +34,12 @@ public class EnemySpawner : MonoBehaviour
     public SpawnerTimer Timer;
     public SpawnerTimer Timer2;
 
+    public float TotalScore = 0;
+    public bool GameOver = false;
+    public Canvas GameOver_UI;
+    public UI_GameOver_Text_Score Score;
+    bool fin = true;
+
     private void Start()
     {
         Timer.SetMaxNextWaveTime(WaveRate);
@@ -46,72 +52,85 @@ public class EnemySpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Spawn Location
-        SpawnLocation = EnemySpawnCenter.transform.position; // gets start position
-
-        SpawnAngle = Random.Range(0f, Mathf.PI); // gets a random value of radians between 0 and PI       
-        // Sets the Spawn location using the random value with the radius determined to spawn a enemy at the desired location
-        SpawnLocation.x = SpawnLocation.x + (Mathf.Cos(SpawnAngle) * SpawnRadius); // Moves as required on X axis to stay within path of circle
-        SpawnLocation.y = SpawnLocation.y + (Mathf.Sin(SpawnAngle) * SpawnRadius); // Moves as required on Y axis to stay within path of circle
-
-        if (WaveStarted == true)
+        if (!GameOver)
         {
-            //Delay to stop the game from spawinng every tick
-            if (Enemycount < MaxEnemies) // if the enemy count is < Max enemies it will continue to spawn enemys 
-            {
-                if (Spawning == true) // enemy just been spawned
-                {
-                    Spawndelay += Time.deltaTime; // time increase
+            // Spawn Location
+            SpawnLocation = EnemySpawnCenter.transform.position; // gets start position
 
-                    if (Spawndelay >= SpawnRate) // time check
+            SpawnAngle = Random.Range(0f, Mathf.PI); // gets a random value of radians between 0 and PI       
+                                                     // Sets the Spawn location using the random value with the radius determined to spawn a enemy at the desired location
+            SpawnLocation.x = SpawnLocation.x + (Mathf.Cos(SpawnAngle) * SpawnRadius); // Moves as required on X axis to stay within path of circle
+            SpawnLocation.y = SpawnLocation.y + (Mathf.Sin(SpawnAngle) * SpawnRadius); // Moves as required on Y axis to stay within path of circle
+
+            if (WaveStarted == true)
+            {
+                //Delay to stop the game from spawinng every tick
+                if (Enemycount < MaxEnemies) // if the enemy count is < Max enemies it will continue to spawn enemys 
+                {
+                    if (Spawning == true) // enemy just been spawned
                     {
-                        Spawning = false; // Enemy hasnt just been spawned
-                        Spawndelay = 0; // timer reset
+                        Spawndelay += Time.deltaTime; // time increase
+
+                        if (Spawndelay >= SpawnRate) // time check
+                        {
+                            Spawning = false; // Enemy hasnt just been spawned
+                            Spawndelay = 0; // timer reset
+                        }
+                    }
+                    else if (Spawning == false) // Enemy hasnt just been spawned
+                    {
+                        GameObject EnemySpawned = Instantiate(Enemy, SpawnLocation, transform.rotation); // Create Enemy // Enemy Spawned allows me to adjust varibles within the new object
+                        Spawning = true; // Enemy has just been spawned
+                        ++Enemycount; // Enemy Count increases by 1
+                        Debug.Log("Enemy Spawned |=| Enemy Count = " + Enemycount);
                     }
                 }
-                else if (Spawning == false) // Enemy hasnt just been spawned
-                {
-                    GameObject EnemySpawned = Instantiate(Enemy, SpawnLocation, transform.rotation); // Create Enemy // Enemy Spawned allows me to adjust varibles within the new object
-                    Spawning = true; // Enemy has just been spawned
-                    ++Enemycount; // Enemy Count increases by 1
-                    Debug.Log("Enemy Spawned |=| Enemy Count = " + Enemycount);
-                }
-            }
 
-            if (EnemyKillCount >= TargetEnemyNumber)
+                if (EnemyKillCount >= TargetEnemyNumber)
+                {
+                    EnemyKillCount = 0;
+                    WaveStarted = false;
+                    if (WaveNumber < 10)
+                    {
+                        WaveRate = WaveRate + (0.25f * WaveNumber) + 5f;
+                    }
+
+                    if (WaveNumber >= 10)
+                    {
+                        WaveRate = WaveRate - (WaveRate / 100);
+                    }
+
+                    Timer.SetMaxNextWaveTime(WaveRate);
+                    Timer2.SetMaxNextWaveTime(WaveRate);
+                    Wavedelay = 0;
+                }
+
+
+            }
+            else if (WaveStarted == false)
             {
-                EnemyKillCount = 0;
-                WaveStarted = false;
-                if (WaveNumber < 10)
-                {
-                    WaveRate = WaveRate + (0.25f * WaveNumber) + 5f;
-                }
+                Wavedelay += Time.deltaTime; // time increase
+                Timer.SetWaveTime(WaveRate - Wavedelay);
+                Timer2.SetWaveTime(WaveRate - Wavedelay);
 
-                if (WaveNumber >= 10)
+                if (Wavedelay >= WaveRate) // time check
                 {
-                    WaveRate = WaveRate - (WaveRate / 100);
+                    WaveStarted = true;
+                    ++WaveNumber;
+                    TargetEnemyNumber = (2 * WaveNumber) + (WaveNumber * 4);
                 }
-
-                Timer.SetMaxNextWaveTime(WaveRate);
-                Timer2.SetMaxNextWaveTime(WaveRate);
-                Wavedelay = 0;
             }
-
 
         }
-        else if (WaveStarted == false)
+        else if (GameOver)
         {
-            Wavedelay += Time.deltaTime; // time increase
-            Timer.SetWaveTime(WaveRate - Wavedelay);
-            Timer2.SetWaveTime(WaveRate - Wavedelay);
 
-            if (Wavedelay >= WaveRate) // time check
+            if (fin == true)
             {
-                WaveStarted = true;
-                ++WaveNumber;
-                TargetEnemyNumber = (2 * WaveNumber) + (WaveNumber * 4);         
+                fin = false;
+                Instantiate(GameOver_UI, SpawnLocation, transform.rotation);
+                Score.ScoreUpdate(TotalScore);
             }
         }
-
     }
 }

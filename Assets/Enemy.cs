@@ -24,12 +24,15 @@ public class Enemy : MonoBehaviour
     public float EnemyHealth; // Current Health
     private float LastFrameHealth; // Previous Health
 
+    private float Value = 100;
+
     // Health Bar
     public HealthBar healthBar; // Health Bar
 
     // Called Once at Start
     void Start()
     {
+        Tower = GameObject.FindGameObjectWithTag("Tower");
         EnemySpawner = GameObject.FindGameObjectWithTag("EnemySpawner"); // Ensures that the Enemy Spawner is set within the enemy so when it gets destroyed it updates the enemy count as required.       
         EnemyHealth = EnemyMaxHealth; // Ensures that Health equals Max health when spawned
         LastFrameHealth = EnemyMaxHealth; // Sets the Default Last Health Value
@@ -86,6 +89,11 @@ public class Enemy : MonoBehaviour
         {
             --EnemySpawner.GetComponent<EnemySpawner>().Enemycount; // Adjust the Enemy Count by 1 when destroyed
             ++EnemySpawner.GetComponent<EnemySpawner>().EnemyKillCount;
+            EnemySpawner.GetComponent<EnemySpawner>().TotalScore += Value;
+        }
+        if (Tower != null)
+        {
+            Tower.GetComponent<Tower>().Health = 0;
         }
     }
 

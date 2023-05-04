@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tower: {fileID: 3062255099922652023, guid: a314917231768bb4bab214c90c856657, type: 3}
   speed: 1
-  EnemySpawner: {fileID: 0}
+  EnemySpawner: {fileID: 6701069478795257990, guid: 5aca76a4d3ff56740b0789512273270b, type: 3}
   EnemyMaxHealth: 100
   EnemyHealth: 100
   healthBar: {fileID: 7029669425043602693}
