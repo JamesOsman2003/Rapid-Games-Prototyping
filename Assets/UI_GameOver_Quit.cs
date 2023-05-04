@@ -8,8 +8,8 @@ public class UI_GameOver_Quit : MonoBehaviour
 {
     public void Quit()
     {
-        EditorApplication.isPlaying = false;
-        Application.Quit(0);
+        SceneManager.LoadSceneAsync(0);
+        SceneManager.UnloadSceneAsync(1);
         //SceneManager.UnloadSceneAsync(SceneManager.GetSceneByBuildIndex(0));
     }
 }

@@ -60,7 +60,9 @@ public class Player : MonoBehaviour
     Vector2 TurretPosition = Vector2.zero; // Turret Position to go to
 
     // Turret Movement
-    public float TurretSpeed = 0.1f; // Speed at which turret can move
+    private float TurretSpeed;// Speed at which turret can move
+    private float TSW = 0.3f;
+    private float TSS = 0.6f;
     private float TurretAngleDeg = 90; // Angle of Turret in Degrees
     public float TurretAngle = 0; // Turret Angle in Radians
     public float TurretRadius = 2; // Radius of Turret circle it moves in
@@ -73,109 +75,115 @@ public class Player : MonoBehaviour
     private float firedelay = 0; // increases with time to ensure passage of time before next shot fired
     private bool firing = false; // is firing?
 
-
+    public GameObject GM;
     
     // Start of Code \\
 
     // Called Once at Start
     void Start()
     {
+        GM = GameObject.FindGameObjectWithTag("EnemySpawner");
         rb = GetComponent<Rigidbody2D>(); // Rigidbody used for movement 
         PState = PlayerState.Walk; // Player Default State - Walking
-
+        TurretSpeed = TSW;
         Camera1.SetActive(true); // PLayer Camera is on
         Camera2.SetActive(false); // Tower Camera is off
     }
 
+    
     // Update is called once per frame
     void Update()
     {
-        // Inputs for Movement
+        if (!GM.GetComponent<EnemySpawner>().GameOver)
         {
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            // Inputs for Movement
             {
-                Up = 1;
-            }
-            else if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                Up = 0;
-            }
-            if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                Down = 1;
-            }
-            else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                Down = 0;
-            }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                Right = 1;
-            }
-            else if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow))
-            {
-                Right = 0;
-            }
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                Left = 1;
-            }
-            else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow))
-            {
-                Left = 0;
-            }
-        } // 0 if key not pressed 1 if pressed (WASD + Arrow Keys)
+                if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    Up = 1;
+                }
+                else if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    Up = 0;
+                }
+                if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    Down = 1;
+                }
+                else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
+                {
+                    Down = 0;
+                }
+                if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    Right = 1;
+                }
+                else if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    Right = 0;
+                }
+                if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    Left = 1;
+                }
+                else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow))
+                {
+                    Left = 0;
+                }
+             // 0 if key not pressed 1 if pressed (WASD + Arrow Keys)
 
-        // Outcome of inputs
-        Horizontal = Right - Left;
-        Vertical = Up - Down;        
+            // Outcome of inputs
+            Horizontal = Right - Left;
+            Vertical = Up - Down;
 
-        // Outcome of inputs in a vector 2 format
-        HV.x = Horizontal;
-        HV.y = Vertical;
+            // Outcome of inputs in a vector 2 format
+            HV.x = Horizontal;
+            HV.y = Vertical;
 
-        // Direction
-        Vector2 direction = start + (HV);
-        movement = direction;
+            // Direction
+            Vector2 direction = start + (HV);
+            movement = direction;
 
-        // Inputs for Sprint
-        {
-            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+            // Inputs for Sprint
             {
-                speed = sprint;
+                if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+                {
+                    speed = sprint;
+                    TurretSpeed = TSS;
+                }
+                else if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift))
+                {
+                    speed = walk;
+                    TurretSpeed = TSW;
+                }
             }
-            else if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift))
+
+            // Input for Interaction
             {
-                speed = walk;
+                if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Keypad1))
+                {
+                    interacting = true;
+                    Debug.Log("Interacting");
+                }
+                else if (Input.GetKeyUp(KeyCode.E) || Input.GetKeyDown(KeyCode.Keypad1))
+                {
+                    interacting = false;
+                }
+            }
+
+            // Input for Shooting
+            {
+                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Keypad0))
+                {
+                    Shooting = true;
+                    Debug.Log("Shooting");
+                }
+                else if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.Keypad0))
+                {
+                    Shooting = false;
+                }
             }
         }
-
-        // Input for Interaction
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                interacting = true;
-                Debug.Log("Interacting");
-            }
-            else if (Input.GetKeyUp(KeyCode.E))
-            {
-                interacting = false;
-            }
-        }
-
-        // Input for Shooting
-        {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                Shooting = true;
-                Debug.Log("Shooting");
-            }
-            else if (Input.GetKeyUp(KeyCode.Q))
-            {
-                Shooting = false;
-            }
-        }
-
 
         // Player State Walk
         if (PState == PlayerState.Walk)
@@ -195,25 +203,25 @@ public class Player : MonoBehaviour
             }
         }
 
-        // Player State Turret
-        if (PState == PlayerState.Turret)
-        {
-            // This means player is in the turret so can interact to get out of the seat;
-            if (interacting == true)
+            // Player State Turret
+            if (PState == PlayerState.Turret)
             {
-                interacting = false; // Prevents double interactions
-                PState = PlayerState.Walk; // Switchs the control from Turret to Player
-                Debug.Log("Switch to Player Control");
+                // This means player is in the turret so can interact to get out of the seat;
+                if (interacting == true)
+                {
+                    interacting = false; // Prevents double interactions
+                    PState = PlayerState.Walk; // Switchs the control from Turret to Player
+                    Debug.Log("Switch to Player Control");
 
-                // Camera Switch Focus to Player
-                Camera1.SetActive(true);
-                Camera2.SetActive(false);
-            }
-            
-            // Turret Controls Movement
-            TurretAngleDeg -= TurretSpeed * Horizontal; // left increases the number while right decreases the number as horizontal is 1 or negative 1 and we are taking it away.
-            TurretAngleDeg = Mathf.Clamp(TurretAngleDeg, 0, 180); // ensures that the turret stays within 0 and 180 degrees to ensure turret stays above the ground.
-            TurretAngle = TurretAngleDeg * Mathf.Deg2Rad; // swaps the angle in degrees to radians
+                    // Camera Switch Focus to Player
+                    Camera1.SetActive(true);
+                    Camera2.SetActive(false);
+                }
+
+                // Turret Controls Movement
+                TurretAngleDeg -= TurretSpeed * Horizontal; // left increases the number while right decreases the number as horizontal is 1 or negative 1 and we are taking it away.
+                TurretAngleDeg = Mathf.Clamp(TurretAngleDeg, 0, 180); // ensures that the turret stays within 0 and 180 degrees to ensure turret stays above the ground.
+                TurretAngle = TurretAngleDeg * Mathf.Deg2Rad; // swaps the angle in degrees to radians
 
                 // Turret Movement
                 TurretPosition = Turret.transform.position; // gets start position
@@ -221,25 +229,26 @@ public class Player : MonoBehaviour
                 TurretPosition.y = TurretCP.transform.position.y + (Mathf.Sin(TurretAngle) * TurretRadius); // Moves as required on Y axis to stay within path of circle
                 Turret.transform.position = TurretPosition; // Sets the Position of Turret
 
-            // Shooting the Turret
-            if (Shooting == true) 
-            {
-                if (firing == false) //
-                                     // Bullet not just fired
+                // Shooting the Turret
+                if (Shooting == true)
                 {
-                    Instantiate(Bullet, TurretPosition, transform.rotation); // Creates a Bullet
-                    firing = true; // Bullet just fired
-                    Debug.Log("Create Bullet");
-                }
-
-                if (firing == true) // Bullet just fired
-                {
-                    firedelay += Time.deltaTime; // time increase 
-
-                    if (firedelay >= firerate) // if enough time has passed
+                    if (firing == false) //
+                                         // Bullet not just fired
                     {
-                        firedelay = 0; // timer reset
-                        firing = false; // Bullet not just fired
+                        Instantiate(Bullet, TurretPosition, transform.rotation); // Creates a Bullet
+                        firing = true; // Bullet just fired
+                        Debug.Log("Create Bullet");
+                    }
+
+                    if (firing == true) // Bullet just fired
+                    {
+                        firedelay += Time.deltaTime; // time increase 
+
+                        if (firedelay >= firerate) // if enough time has passed
+                        {
+                            firedelay = 0; // timer reset
+                            firing = false; // Bullet not just fired
+                        }
                     }
                 }
             }

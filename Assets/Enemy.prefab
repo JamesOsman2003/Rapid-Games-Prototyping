@@ -153,6 +153,7 @@ MonoBehaviour:
   EnemyMaxHealth: 100
   EnemyHealth: 100
   healthBar: {fileID: 7029669425043602693}
+  HealthDrop: {fileID: 1835754688107304251, guid: 297fd0bbc5dcafe49beadccf4879df04, type: 3}
 --- !u!1001 &2191182404237781595
 PrefabInstance:
   m_ObjectHideFlags: 0

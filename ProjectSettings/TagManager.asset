@@ -7,8 +7,9 @@ TagManager:
   - Enemy
   - Turret Seat
   - EnemySpawner
-  - HealthBar
-  - Canvas
+  - Tower
+  - Score
+  - HealthPickUp
   layers:
   - Default
   - TransparentFX

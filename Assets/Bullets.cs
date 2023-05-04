@@ -62,6 +62,10 @@ public class Bullets : MonoBehaviour
             // Damage
             HitEnemy = collision.gameObject; // Sets the Enemy to be hit to take damage off when bullet is destroyed to prevent multiple damage points for individual attack.
         }
+        if (collision.gameObject.tag == "HealthPickUp")
+        {
+            Destroy(collision.gameObject);
+        }
     }
 
     private void FixedUpdate()

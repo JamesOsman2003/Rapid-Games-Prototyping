@@ -39,6 +39,10 @@ public class EnemySpawner : MonoBehaviour
     public Canvas GameOver_UI;
     public UI_GameOver_Text_Score Score;
     bool fin = true;
+    //private Canvas a;
+
+    private float d1 = 0;
+    
 
     private void Start()
     {
@@ -54,6 +58,14 @@ public class EnemySpawner : MonoBehaviour
     {
         if (!GameOver)
         {
+            GameOver_UI.gameObject.SetActive(false);
+            //Debug.Log(TotalScore);
+            d1 += Time.deltaTime;
+            if (d1 > 1)
+            {
+                TotalScore += 1;
+                d1 = 0;
+            }
             // Spawn Location
             SpawnLocation = EnemySpawnCenter.transform.position; // gets start position
 
@@ -128,7 +140,8 @@ public class EnemySpawner : MonoBehaviour
             if (fin == true)
             {
                 fin = false;
-                Instantiate(GameOver_UI, SpawnLocation, transform.rotation);
+                GameOver_UI.gameObject.SetActive(true);
+                //a = Instantiate(GameOver_UI, SpawnLocation, transform.rotation);
                 Score.ScoreUpdate(TotalScore);
             }
         }
